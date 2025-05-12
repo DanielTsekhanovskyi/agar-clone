@@ -1,4 +1,11 @@
-const socket = io('https://your-render-app.onrender.com');
+const socket = io('https://agar-clone-safv.onrender.com', {
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    timeout: 20000,
+    withCredentials: true
+});
 
 socket.on('connect', () => {
     console.log('Підключено до сервера');
@@ -6,6 +13,10 @@ socket.on('connect', () => {
 
 socket.on('connect_error', (error) => {
     console.error('Помилка підключення до сервера:', error);
+});
+
+socket.on('disconnect', (reason) => {
+    console.log('Відключено від сервера:', reason);
 });
 
 const canvas = document.getElementById('gameCanvas');
@@ -94,6 +105,7 @@ function startGame() {
 
 // Обробка подій від сервера
 socket.on('gameState', (data) => {
+    console.log('Отримано стан гри:', data);
     data.players.forEach(p => {
         if (p.id !== socket.id) {
             otherPlayers.set(p.id, p);
@@ -102,14 +114,17 @@ socket.on('gameState', (data) => {
 });
 
 socket.on('playerJoined', (newPlayer) => {
+    console.log('Новий гравець приєднався:', newPlayer);
     otherPlayers.set(newPlayer.id, newPlayer);
 });
 
 socket.on('playerLeft', (playerId) => {
+    console.log('Гравець покинув гру:', playerId);
     otherPlayers.delete(playerId);
 });
 
 socket.on('playerMoved', (playerData) => {
+    console.log('Гравець рухається:', playerData);
     if (otherPlayers.has(playerData.id)) {
         otherPlayers.set(playerData.id, {
             ...otherPlayers.get(playerData.id),

@@ -4,8 +4,11 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"]
-    }
+        methods: ["GET", "POST"],
+        credentials: true
+    },
+    transports: ['websocket', 'polling'],
+    allowEIO3: true
 });
 
 const PORT = process.env.PORT || 3000;
@@ -16,11 +19,28 @@ const players = new Map(); // Зберігаємо всіх гравців
 const mapWidth = 3000;
 const mapHeight = 3000;
 
+// Додаємо CORS middleware
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
+
+// Додаємо логування для всіх підключень
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // Обробка підключень
 io.on('connection', (socket) => {
     console.log('Новий гравець підключився:', socket.id);
+    console.log('Загальна кількість гравців:', players.size + 1);
 
     socket.on('startGame', (playerData) => {
+        console.log('Гравець почав гру:', socket.id, playerData);
         // Створюємо нового гравця
         const player = {
             id: socket.id,
@@ -33,6 +53,7 @@ io.on('connection', (socket) => {
         };
         
         players.set(socket.id, player);
+        console.log('Поточні гравці:', Array.from(players.values()));
         
         // Відправляємо початкові дані гравцю
         socket.emit('gameState', {
@@ -67,6 +88,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Гравець відключився:', socket.id);
         players.delete(socket.id);
+        console.log('Залишилось гравців:', players.size);
         io.emit('playerLeft', socket.id);
     });
 });
@@ -74,4 +96,5 @@ io.on('connection', (socket) => {
 // Стартуємо сервер
 http.listen(PORT, () => {
     console.log(`Сервер працює на порту ${PORT}`);
+    console.log('WebSocket сервер налаштований');
 });

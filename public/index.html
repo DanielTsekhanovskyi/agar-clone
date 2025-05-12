@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Agar.io</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            background: #f9f9f9;
+        }
+
+        #startMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #nicknameInput {
+            padding: 10px;
+            font-size: 20px;
+        }
+
+        #startButton {
+            padding: 10px 20px;
+            font-size: 24px;
+            background: #28a745;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        #startButton:hover {
+            background: #218838;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #winMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            display: none;
+        }
+
+        #restartButton {
+            padding: 10px 20px;
+            font-size: 24px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        #restartButton:hover {
+            background: #0069d9;
+        }
+    </style>
+</head>
+<body>
+
+<div id="startMenu">
+    <input type="text" id="nicknameInput" placeholder="Введіть ваш нікнейм">
+    <button id="startButton">Start Game</button>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<div id="winMenu">
+    <h1>Ви виграли!</h1>
+    <button id="restartButton">Почати спочатку</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+
+</body>
+</html>  
